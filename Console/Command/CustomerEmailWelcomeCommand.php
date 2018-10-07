@@ -6,7 +6,7 @@ use Magento\Framework\App\State;
 use Magento\Customer\Model\CustomerFactory;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,13 +26,13 @@ class CustomerEmailWelcomeCommand extends Command
 	{
 		$this->setName('customer:email:welcome')
 			->setDescription('Send welcome email to all users in the specified website');
-		$this->addOption('website', null, InputOption::VALUE_REQUIRED, 'Send welcome emails to all users in this website');
+		$this->addArgument('website', InputArgument::REQUIRED, 'Send welcome emails to all users in this website');
 		parent::configure();
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$website = $input->getOption('website');
-		$output->writeln("<info>Sending welcome emails to all users in $website…</info>");
+		$website = $input->getArgument('website');
+		$output->writeln("<info>Sending welcome emails to all users in ${website}…</info>");
 	}
 }

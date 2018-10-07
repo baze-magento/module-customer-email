@@ -35,5 +35,5 @@ systemctl start cron
 
 ```bash
 # as user
-magento customer:email:send --website=code
+magento customer:email:welcome website-code
 ```
