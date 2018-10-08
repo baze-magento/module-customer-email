@@ -38,7 +38,7 @@ class CustomerEmailWelcomeCommand extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$website = $input->getArgument('website');
-		$websiteId = getStoreManager()->getWebsites(false, true)[$website]->getId(); // $withDefault, $codeKey
+		$websiteId = $this->getStoreManager()->getWebsites(false, true)[$website]->getId(); // $withDefault, $codeKey
 		$output->writeln("<info>Sending welcome emails to all users in '${website}', ID ${websiteId}…</info>");
 
 		$customers = $this->customerFactory->create()->getCollection();
