@@ -45,7 +45,7 @@ class CustomerEmailWelcomeCommand extends Command
 		$customers->addFieldToFilter('website_id', $websiteId);
 		foreach ($customers as $customer) {
 			$storeId = $customer->getStoreId();
-			output->writeln("newAccount($customer, $templateType, $redirectUrl, $storeId)");
+			$output->writeln("newAccount($customer, $templateType, $redirectUrl, $storeId)");
 			// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
 		}
 	}
