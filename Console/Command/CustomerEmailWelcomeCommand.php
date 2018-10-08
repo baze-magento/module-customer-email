@@ -55,9 +55,9 @@ class CustomerEmailWelcomeCommand extends Command
 		$failed = 0;
 		foreach ($customerIntercepts as $customerIntercept) {
 			$email = $customerIntercept->getEmail();
-			$storeId = $customer->getStoreId();
-			$customer = $this->customerRepository->get($email, $websiteId);
+			$storeId = $customerIntercept->getStoreId();
 			if (in_array($storeId, $storeIds, true)) {
+				$customer = $this->customerRepository->get($email, $websiteId);
 				$output->writeln("$email in '${websiteCode}:${storeId}'");
 				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
 				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $storeId);
