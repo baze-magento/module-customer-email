@@ -6,6 +6,7 @@ use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\EmailNotificationInterface;
+use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Math\Random;
@@ -48,15 +49,7 @@ class CustomerEmailWelcomeCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		try {
-			$this->appState->setAreaCode('adminhtml');
-		} catch (\Exception $e) {
-			try {
-				$this->appState->setAreaCode('adminhtml');
-			} catch (\Exception $e) {
-				// area code already set
-			}
-		}
+		$this->appState->setAreaCode(Area::AREA_ADMINHTML);
 
 		$websiteCode = $input->getArgument('website');
 		$website = $this->getStoreManager()->getWebsites(false, true)[$websiteCode]; // $withDefault, $codeKey
