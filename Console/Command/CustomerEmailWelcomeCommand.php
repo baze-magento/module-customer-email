@@ -48,8 +48,8 @@ class CustomerEmailWelcomeCommand extends Command
 
 		$customers = $this->customerFactory->create()->getCollection();
 		$customers->addFieldToFilter('website_id', $websiteId);
-		$succeeded = 0
-		$failed = 0
+		$succeeded = 0;
+		$failed = 0;
 		foreach ($customers as $customer) {
 			$email = $customer->getEmail();
 			$storeId = $customer->getStoreId();
