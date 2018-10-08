@@ -68,9 +68,8 @@ class CustomerEmailWelcomeCommand extends Command
 				$customer = $this->customerRepository->get($email, $websiteId);
 				$newLinkToken = $this->mathRandom->getUniqueHash();
 				$this->getAccountManagement()->changeResetPasswordLinkToken($customer, $newLinkToken);
-				//$customer->changeResetPasswordLinkToken($newLinkToken);
 				$output->writeln("$email in '${websiteCode}:${storeId}' (new token)");
-				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
+				// newAccount($customer, $templateType, $redirectUrl, $storeId);
 				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $storeId);
 				$succeeded++;
 			} else {
