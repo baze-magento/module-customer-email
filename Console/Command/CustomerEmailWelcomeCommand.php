@@ -2,9 +2,11 @@
 
 namespace Baze\CustomerEmail\Console\Command;
 
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Customer\Model\EmailNotificationInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\App\ObjectManager;
-use Magento\Customer\Model\CustomerFactory;
+use Magento\Store\Model\StoreManagerInterface;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
