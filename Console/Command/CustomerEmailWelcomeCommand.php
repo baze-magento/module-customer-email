@@ -42,6 +42,16 @@ class CustomerEmailWelcomeCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		try {
+			$this->appState->setAreaCode('adminhtml');
+		} catch (\Exception $e) {
+			try {
+				$this->appState->setAreaCode('adminhtml');
+			} catch (\Exception $e) {
+				// area code already set
+			}
+		}
+
 		$websiteCode = $input->getArgument('website');
 		$website = $this->getStoreManager()->getWebsites(false, true)[$websiteCode]; // $withDefault, $codeKey
 		$websiteId = $website->getId();
