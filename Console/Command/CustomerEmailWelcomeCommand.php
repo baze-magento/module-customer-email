@@ -29,13 +29,12 @@ class CustomerEmailWelcomeCommand extends Command
 
 	const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'customer/create_account/email_no_password_template';
 
-	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom, AccountManagementInterface $accountManagement)
+	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom)
 	{
 		$this->appState = $appState;
 		$this->customerFactory = $customerFactory;
 		$this->customerRepository = $customerRepository;
 		$this->mathRandom = $mathRandom;
-		$this->accountManagement = $accountManagement;
 		parent::__construct();
 	}
 
@@ -68,7 +67,7 @@ class CustomerEmailWelcomeCommand extends Command
 			if (in_array($storeId, $storeIds, true)) {
 				$customer = $this->customerRepository->get($email, $websiteId);
 				$newLinkToken = $this->mathRandom->getUniqueHash();
-				$accountManagement->changeResetPasswordLinkToken($customer, $newLinkToken);
+				$this->getAccountManagement()->changeResetPasswordLinkToken($customer, $newLinkToken);
 				//$customer->changeResetPasswordLinkToken($newLinkToken);
 				$output->writeln("$email in '${websiteCode}:${storeId}' (new token)");
 				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
@@ -98,5 +97,13 @@ class CustomerEmailWelcomeCommand extends Command
 			$this->storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
 		}
 		return $this->storeManager;
+	}
+
+	private function getAccountManagement()
+	{
+		if (!($this->accountManagement instanceof AccountManagementInterface)) {
+			$this->accountManagement = ObjectManager::getInstance()->get(accountManagementInterface::class);
+		}
+		return $this->accountManagement;
 	}
 }
