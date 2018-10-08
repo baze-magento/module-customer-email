@@ -2,6 +2,7 @@
 
 namespace Baze\CustomerEmail\Console\Command;
 
+use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\EmailNotificationInterface;
 use Magento\Framework\App\State;
@@ -17,15 +18,17 @@ class CustomerEmailWelcomeCommand extends Command
 {
 	protected $appState;
 	protected $customerFactory;
+	protected $customerRepository;
 	protected $emailNotification;
 	protected $storeManager;
 
 	const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'customer/create_account/email_no_password_template';
 
-	public function __construct(State $appState, CustomerFactory $customerFactory)
+	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository)
 	{
 		$this->appState = $appState;
 		$this->customerFactory = $customerFactory;
+		$this->customerRepository = $customerRepository;
 		parent::__construct();
 	}
 
@@ -46,20 +49,21 @@ class CustomerEmailWelcomeCommand extends Command
 		$storeIds = $website->getStoreIds();
 		$output->writeln("<info>Sending welcome emails to all users in '${websiteName} (ID ${websiteId}:${websiteCode})'…</info>");
 
-		$customers = $this->customerFactory->create()->getCollection();
-		$customers->addFieldToFilter('website_id', $websiteId);
+		$customerIntercepts = $this->customerFactory->create()->getCollection();
+		$customerIntercepts->addFieldToFilter('website_id', $websiteId);
 		$succeeded = 0;
 		$failed = 0;
-		foreach ($customers as $customer) {
-			$email = $customer->getEmail();
+		foreach ($customerIntercepts as $customerIntercept) {
+			$email = $customerIntercept->getEmail();
 			$storeId = $customer->getStoreId();
+			$customer = $this->customerRepository->get($email, $websiteId);
 			if (in_array($storeId, $storeIds, true)) {
 				$output->writeln("$email in '${websiteCode}:${storeId}'");
-				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
-				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $customer->getStoreId());
+				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
+				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $storeId);
 				$succeeded++;
 			} else {
-				$output->writeln("<warn>$email in store '$storeId' not of '$website'</warn>");
+				$output->writeln("<warn>$email in store '$storeId' not of '$websiteCode'</warn>");
 				$failed++;
 			}
 		}
