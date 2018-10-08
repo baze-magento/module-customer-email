@@ -2,6 +2,7 @@
 
 namespace Baze\CustomerEmail\Console\Command;
 
+use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\EmailNotificationInterface;
@@ -21,17 +22,19 @@ class CustomerEmailWelcomeCommand extends Command
 	protected $customerFactory;
 	protected $customerRepository;
 	protected $mathRandom;
+  protected $accountManagement;
 	protected $emailNotification;
 	protected $storeManager;
 
 	const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'customer/create_account/email_no_password_template';
 
-	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom)
+	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom, AccountManagement $accountManagement)
 	{
 		$this->appState = $appState;
 		$this->customerFactory = $customerFactory;
 		$this->customerRepository = $customerRepository;
 		$this->mathRandom = $mathRandom;
+		$this->accountManagement = $accountManagement;
 		parent::__construct();
 	}
 
@@ -71,12 +74,10 @@ class CustomerEmailWelcomeCommand extends Command
 			$storeId = $customerIntercept->getStoreId();
 			if (in_array($storeId, $storeIds, true)) {
 				$customer = $this->customerRepository->get($email, $websiteId);
-        if ($customer->isResetPasswordLinkTokenExpired()) {
-					$newLinkToken = $this->mathRandom->getUniqueHash();
-					$customer->changeResetPasswordLinkToken($newLinkToken);
-					$output->writeln("$email in '${websiteCode}:${storeId}' (new token)");
-				} else {
-				}
+				$newLinkToken = $this->mathRandom->getUniqueHash();
+				$accountManagement->changeResetPasswordLinkToken($customer, $newLinkToken);
+				//$customer->changeResetPasswordLinkToken($newLinkToken);
+				$output->writeln("$email in '${websiteCode}:${storeId}' (new token)");
 				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
 				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $storeId);
 				$succeeded++;
