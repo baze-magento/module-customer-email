@@ -48,16 +48,23 @@ class CustomerEmailWelcomeCommand extends Command
 
 		$customers = $this->customerFactory->create()->getCollection();
 		$customers->addFieldToFilter('website_id', $websiteId);
+		$succeeded = 0
+		$failed = 0
 		foreach ($customers as $customer) {
 			$email = $customer->getEmail();
 			$storeId = $customer->getStoreId();
 			if (in_array($storeId, $storeIds, true)) {
 				$output->writeln("$email in '${websiteCode}:${storeId}'");
+				$this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
+				$succeeded++;
 			} else {
 				$output->writeln("<warn>$email in store '$storeId' not of '$website'</warn>");
+				$failed++;
 			}
-			// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
 		}
+
+		$output->writeln("<info>Sent $succeeded welcome emails.</info>");
+		$output->writeln("<info>Skipped $failed welcome emails.</info>");
 	}
 
 	private function getEmailNotification()
