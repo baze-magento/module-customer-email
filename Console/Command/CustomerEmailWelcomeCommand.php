@@ -39,16 +39,23 @@ class CustomerEmailWelcomeCommand extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$website = $input->getArgument('website');
-		$websiteId = $this->getStoreManager()->getWebsites(false, true)[$website]->getId(); // $withDefault, $codeKey
-		$output->writeln("<info>Sending welcome emails to all users in '${website}', ID ${websiteId}…</info>");
+		$websiteCode = $input->getArgument('website');
+		$website = $this->getStoreManager()->getWebsites(false, true)[$websiteCode]; // $withDefault, $codeKey
+		$websiteId = $website->getId();
+		$websiteName = $website->getName();
+		$storeIds = $website->getStoreIds();
+		$output->writeln("<info>Sending welcome emails to all users in '${websiteName} (ID ${websiteId}:${websiteCode})'…</info>");
 
 		$customers = $this->customerFactory->create()->getCollection();
 		$customers->addFieldToFilter('website_id', $websiteId);
 		foreach ($customers as $customer) {
 			$email = $customer->getEmail();
 			$storeId = $customer->getStoreId();
-			$output->writeln("$email in store '$storeId' of '$website'");
+			if (in_array($storeId, $storeIds, true)) {
+				$output->writeln("$email in '${websiteCode}:${storeId}'");
+			} else {
+				$output->writeln("<warn>$email in store '$storeId' not of '$website'</warn>");
+			}
 			// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
 		}
 	}
