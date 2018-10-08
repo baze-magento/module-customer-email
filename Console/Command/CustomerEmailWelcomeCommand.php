@@ -55,7 +55,8 @@ class CustomerEmailWelcomeCommand extends Command
 			$storeId = $customer->getStoreId();
 			if (in_array($storeId, $storeIds, true)) {
 				$output->writeln("$email in '${websiteCode}:${storeId}'");
-				$this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
+				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $customer->getStoreId());
+				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $customer->getStoreId());
 				$succeeded++;
 			} else {
 				$output->writeln("<warn>$email in store '$storeId' not of '$website'</warn>");
