@@ -7,6 +7,7 @@ use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\EmailNotificationInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Math\Random;
 use Magento\Store\Model\StoreManagerInterface;
 
 use Symfony\Component\Console\Command\Command;
@@ -19,16 +20,18 @@ class CustomerEmailWelcomeCommand extends Command
 	protected $appState;
 	protected $customerFactory;
 	protected $customerRepository;
+	protected $mathRandom;
 	protected $emailNotification;
 	protected $storeManager;
 
 	const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'customer/create_account/email_no_password_template';
 
-	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository)
+	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom)
 	{
 		$this->appState = $appState;
 		$this->customerFactory = $customerFactory;
 		$this->customerRepository = $customerRepository;
+		$this->mathRandom = $mathRandom;
 		parent::__construct();
 	}
 
@@ -68,7 +71,12 @@ class CustomerEmailWelcomeCommand extends Command
 			$storeId = $customerIntercept->getStoreId();
 			if (in_array($storeId, $storeIds, true)) {
 				$customer = $this->customerRepository->get($email, $websiteId);
-				$output->writeln("$email in '${websiteCode}:${storeId}'");
+        if ($customer->isResetPasswordLinkTokenExpired()) {
+					$newLinkToken = $this->mathRandom->getUniqueHash();
+					$customer->changeResetPasswordLinkToken($newLinkToken);
+					$output->writeln("$email in '${websiteCode}:${storeId}' (new token)");
+				} else {
+				}
 				// $this->getEmailNotification()->newAccount($customer, $templateType, $redirectUrl, $storeId);
 				$this->getEmailNotification()->newAccount($customer, 'registered_no_password', '', $storeId);
 				$succeeded++;
