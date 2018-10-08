@@ -28,7 +28,7 @@ class CustomerEmailWelcomeCommand extends Command
 
 	const NEW_ACCOUNT_EMAIL_REGISTERED_NO_PASSWORD = 'customer/create_account/email_no_password_template';
 
-	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom, AccountManagement $accountManagement)
+	public function __construct(State $appState, CustomerFactory $customerFactory, CustomerRepositoryInterface $customerRepository, Random $mathRandom, AccountManagementInterface $accountManagement)
 	{
 		$this->appState = $appState;
 		$this->customerFactory = $customerFactory;
