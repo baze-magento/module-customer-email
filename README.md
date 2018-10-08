@@ -16,7 +16,7 @@ systemctl stop cron
 # as user
 magento maintenance:enable
 composer config repositories.module-customer-email vcs https://github.com/bazedk/module-customer-email
-composer require baze/module-customer-email:^1.0
+composer require baze/module-customer-email:^1.1
 magento module:enable Baze_CustomerEmail
 magento setup:upgrade
 magento setup:di:compile
