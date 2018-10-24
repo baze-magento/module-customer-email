@@ -1,4 +1,5 @@
-# Baze_CustomerEmail
+# Customer Email 
+Allows customer welcome emails to be sent from the command line.
 
 ## Architecture
 
